@@ -12,8 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-
-
 <body>
     <div class="jumbotron bg-dark text-white py-2" id="jumbo">
         <h1 class="text-center">Weather Dashboard</h1>
@@ -45,7 +43,7 @@
 
             <div class="container-fluid m-4 p-2" id="forecast"></div>
             <h2 class="mt-4 mx-4" id="forecast-title"></h2>
-            <div class="row" id="forecast-data"></div>
+            <div class="row m-2" id="forecast-data"></div>
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -65,8 +63,6 @@
             // var day3 = moment().add(3, 'days').format('l');
             // var day4 = moment().add(4, 'days').format('l');
             // var day5 = moment().add(5, 'days').format('l');
-
-
             console.log(now);
             var savedButtons = document.querySelector("#side-button");
 
@@ -143,7 +139,11 @@
                     uvIndex();
                     forecast();
 
+
                     function forecast() {
+                        event.preventDefault();
+                        $("#forecast-title").empty();
+                        $("#forecast-data").empty();
                         var forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&APPID=35bb60361aad6d32da6fd285f2854917"
 
                         $.ajax({
@@ -151,21 +151,40 @@
                             method: "GET"
                         }).then(function (resp) {
                             console.log(resp);
-
                             var forecastArray = ['3', '11', '19', '27', '35'];
 
                             function makeForecast() {
                                 for (i = 0; forecastArray.length; i++) {
+                                    // 5 Day forecast Icons
+                                    var dayIcons = resp.list[forecastArray[i]].weather[0].icon;
+                                    var tempIcons = resp.list[forecastArray[i]].main.temp;
+                                    var humidityIcons = resp.list[forecastArray[i]].main.humidity;
+                                    var dayIconPic = $("<img id='icon'>");
+                                    var dayIconUrl = "http://openweathermap.org/img/w/" + dayIcons + ".png";
+                                    // var forecastDate = (moment().add((i), 'days').format('l'));
+                                    // console.log(dayIcons);
+                                    // console.log(tempIcons);
+                                    // console.log(humidityIcons);
+                                    // console.log(forecaseDate);
+                                    dayIconPic.attr("src", dayIconUrl);
+
                                     var makeCol = $("<div class='col'>");
                                     var makeCard = $("<div class='card'>");
                                     var makeHead = $("<h3>");
+                                    var makeP = $("<p>");
 
-                                    makeHead.prepend(moment().add((i + 1), 'days').format('l'));
+                                    makeHead.prepend("Date");
+                                    makeCard.addClass("bg-primary text-white");
+                                    makeP.prepend(dayIconPic);
+                                    makeP.append("<br>");
+                                    makeP.append("Temp: " + tempIcons + "F" + "<br>");
+                                    makeP.append("Humidity: " + humidityIcons + "%");
+
                                     $("#forecast-data").append(makeCol.append(makeCard.append(makeHead)));
-
+                                    makeCard.append(makeP);
                                     // console.log(moment().add((i + 1), 'days').format('l'));
                                     // resp.list[i]
-                                }
+                                };
                             };
 
                             $("#forecast-title").text("5 Day Forecast: ");
@@ -178,6 +197,8 @@
                     };
                 });
             })
+
+
         </script>
 </body>
 
