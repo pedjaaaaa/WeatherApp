@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
+
+
 <body>
     <div class="jumbotron bg-dark text-white py-2" id="jumbo">
         <h1 class="text-center">Weather Dashboard</h1>
@@ -19,7 +21,7 @@
 
     <div class="d-flex" id="wrapper">
         <!-- Sidebar -->
-        <div class="bg-light border-right" id="sidebar-wrapper">
+        <div class="bg-light" id="sidebar-wrapper">
             <div class="sidebar-heading">
                 Search for a City:
             </div>
@@ -31,7 +33,7 @@
                             class="fa fa-search"></i></button>
                 </form>
             </div>
-            <div class="list-group list-group-flush" id="city-name">
+            <div class="list-group list-group-flush border" id="city-name">
             </div>
         </div>
 
@@ -57,18 +59,22 @@
             var uv;
             var now = moment().format('l');
             console.log(now);
+            var savedButtons = document.querySelector("#side-button");
 
             $("#find-city").on("click", function (event) {
                 event.preventDefault();
+                $("#city-info").empty();
+                $("#weatherInfo").empty();
 
                 var city = $("#city-search").val();
-                var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=35bb60361aad6d32da6fd285f2854917";
+                var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&APPID=35bb60361aad6d32da6fd285f2854917";
 
                 $.ajax({
                     url: queryURL,
                     method: "GET"
                 }).then(function (response) {
                     console.log(response);
+
                     var cityName = response.name;
                     var cityTemp = response.main.temp;
                     var cityHumid = response.main.humidity;
@@ -77,7 +83,6 @@
                     var cityLon = response.coord.lon;
                     var cityIcon = response.weather[0].icon;
                     var iconUrl = "http://openweathermap.org/img/w/" + cityIcon + ".png";
-                    console.log(iconUrl);
 
                     function uvIndex() {
                         var uvUrl = "http://api.openweathermap.org/data/2.5/uvi?lat=" + cityLat + "&lon=" + cityLon + "&APPID=35bb60361aad6d32da6fd285f2854917";
@@ -86,19 +91,32 @@
                             method: "GET"
                         }).then(function (res) {
                             console.log(res);
+
                             var uv = res.value;
                             var uvButton = $("<button type='button'>");
 
-                            uvButton.addClass("btn btn-success");
+                            function buttonColor() {
+                                if (res.value < 6) {
+                                    console.log("green");
+                                    uvButton.addClass("btn btn-success");
+                                }
+                                else if (res.value >= 6) {
+                                    console.log("red");
+                                    uvButton.addClass("btn btn-danger");
+                                }
+                            };
+                            // Create UV Button
+                            uvButton.addClass("btn");
+                            buttonColor();
                             uvButton.html(uv);
-                            console.log(uvButton);
-                            $("#weatherInfo").append("UV Index: " + uvButton + "<br>");
+                            $("#weatherInfo").append("UV Index: ");
+                            $("#weatherInfo").append(uvButton);
                         });
                     };
 
                     // Side bar cities
                     var listGroup = $("<a href='#''>");
-                    listGroup.addClass("list-group-item list-group-item-action bg-light");
+                    listGroup.addClass("list-group-item list-group-item-action bg-light side-button");
                     listGroup.text(cityName);
                     $("#city-name").append(listGroup);
 
@@ -107,13 +125,13 @@
                     iconPic.attr("src", iconUrl);
                     console.log(iconPic);
 
-                    $("#city-info").text(cityName + " (" + now + ") " + iconPic);
+                    // City search
+                    $("#city-info").text(cityName + " (" + now + ") ");
+                    $("#city-info").append(iconPic);
                     $("#weatherInfo").append("Temperature: " + cityTemp + "<br>");
                     $("#weatherInfo").append("Humidity: " + cityHumid + "%" + "<br>");
                     $("#weatherInfo").append("Wind Speed: " + citySpeed + " MPH" + "<br>");
                     uvIndex();
-
-
                 });
             });
         </script>
