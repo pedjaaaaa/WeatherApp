@@ -75,13 +75,26 @@
                 for (i = 0; i < searchedArray.length; i++) {
                     var city = searchedArray[i];
                     console.log(searchedArray[i]);
-                    var listSearchedGroup = $("<a href='#''>");
+                    var listSearchedGroup = $("<a>");
                     listSearchedGroup.attr("id", city);
                     listSearchedGroup.attr("id", "search-again");
                     listSearchedGroup.addClass("list-group-item list-group-item-action bg-white side-button");
                     listSearchedGroup.text(city);
                     $("#city-name").append(listSearchedGroup);
                 }
+            };
+
+            function createSidebar(cityName, searched) {
+                if ($.inArray(cityName, searched)) {
+                    var listGroup = $("<a>");
+                    listGroup.addClass("list-group-item list-group-item-action bg-white side-button");
+                    listGroup.attr("id", "search-again");
+                    listGroup.text(cityName);
+                    $("#city-name").append(listGroup);
+                }
+                else {
+                    console.log("already in array!");
+                };
             };
 
             function initialCall(city) {
@@ -106,15 +119,7 @@
                     save();
 
                     // Side bar cities
-                    if ($.inArray(cityName, searchedArray)) {
-                        var listGroup = $("<a href='#''>");
-                        listGroup.addClass("list-group-item list-group-item-action bg-white side-button");
-                        listGroup.text(cityName);
-                        $("#city-name").append(listGroup);
-                    }
-                    else {
-                        console.log("already in array!");
-                    };
+                    createSidebar(cityName, searchedArray);
 
                     // Main Icon
                     var iconPic = $("<img id='icon'>");
@@ -138,14 +143,16 @@
                     var tempIcons = resp.list[forecastArray[i]].main.temp;
                     var humidityIcons = resp.list[forecastArray[i]].main.humidity;
                     var dayIconPic = $("<img id='icon'>");
+
                     var dayIconUrl = "http://openweathermap.org/img/w/" + dayIcons + ".png";
                     var forecastDate = (moment().add(x, 'days').format('l'));
+                    dayIconPic.attr("src", dayIconUrl);
+
                     var makeCol = $("<div class='col'>");
                     var makeCard = $("<div class='card'>");
                     var makeHead = $("<h5>");
                     var makeP = $("<p class='forecast-spacing'>");
 
-                    dayIconPic.attr("src", dayIconUrl);
                     makeCard.addClass("bg-primary text-white");
                     makeHead.addClass("pt-2");
                     makeHead.prepend(forecastDate + "<br>");
@@ -218,13 +225,14 @@
                 initialCall(city);
             });
 
+            // On-Click make buttons run ajax function
             $("#search-again").on("click", function (event) {
                 event.preventDefault();
                 $("#city-info").empty();
                 $("#weatherInfo").empty();
 
-                console.log("#search-again").val();
-                var city = $("#search-again").val();
+                var city = $(this).text();
+                console.log(city);
                 forecast(city);
                 initialCall(city);
             })
