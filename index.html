@@ -13,17 +13,17 @@
 </head>
 
 <body>
+    <!-- Header -->
     <div class="jumbotron bg-dark text-white py-2" id="jumbo">
         <h1 class="text-center">Weather Dashboard</h1>
     </div>
 
+    <!-- Side Bar -->
     <div class="d-flex" id="wrapper">
-        <!-- Sidebar -->
         <div class="bg-light" id="sidebar-wrapper">
             <div class="sidebar-heading mx-2">
                 Search for a City:
             </div>
-
             <div class="form-inline">
                 <form class="example mb-3 mx-2">
                     <input type="text" class="form-control" id="city-search"></textarea>
@@ -35,43 +35,56 @@
             </div>
         </div>
 
+        <!-- Daily Forecast -->
         <div id="page-content-wrapper">
             <div class="container-fluid m-4 p-2 border">
-                <h2 class="mt-4" id="city-info"></h2>
+                <h2 class="mt-4 mx-2" id="city-info"></h2>
                 <p id="weatherInfo"></p>
             </div>
 
+            <!-- 5 Day Forecast -->
             <div class="container-fluid m-4 p-2" id="forecast"></div>
             <h2 class="mt-4 mx-4" id="forecast-title"></h2>
             <div class="row m-2" id="forecast-data"></div>
         </div>
+    </div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-        <script type="text/javascript">
-            $(document).ready(function () {
-                console.log("loaded");
-            });
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("loaded");
+            load();
 
-            var searched = {};
-            var createButton = $("<div>");
-            var uv;
+            // Initial Variables
             var now = moment().format('l');
-            // var day1 = moment().add(1, 'days').format('l');
-            // var day2 = moment().add(2, 'days').format('l');
-            // var day3 = moment().add(3, 'days').format('l');
-            // var day4 = moment().add(4, 'days').format('l');
-            // var day5 = moment().add(5, 'days').format('l');
-            console.log(now);
             var savedButtons = document.querySelector("#side-button");
+            var searched = [];
+            var searchedArray = [];
 
-            $("#find-city").on("click", function (event) {
-                event.preventDefault();
-                $("#city-info").empty();
-                $("#weatherInfo").empty();
+            // Save & Load side
+            function save() {
+                localStorage.setItem("searchedCities", JSON.stringify(searched));
+            };
 
-                var city = $("#city-search").val();
+            function load() {
+                var searchedArray = JSON.parse(localStorage.getItem("searchedCities"));
+                console.log("this ran " + searchedArray);
+                console.log(searchedArray.length);
+                for (i = 0; i < searchedArray.length; i++) {
+                    var city = searchedArray[i];
+                    console.log(searchedArray[i]);
+                    var listSearchedGroup = $("<a href='#''>");
+                    listSearchedGroup.attr("id", city);
+                    listSearchedGroup.attr("id", "search-again");
+                    listSearchedGroup.addClass("list-group-item list-group-item-action bg-white side-button");
+                    listSearchedGroup.text(city);
+                    $("#city-name").append(listSearchedGroup);
+                }
+            };
+
+            function initialCall(city) {
                 var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&APPID=35bb60361aad6d32da6fd285f2854917";
 
                 $.ajax({
@@ -79,7 +92,6 @@
                     method: "GET"
                 }).then(function (response) {
                     console.log(response);
-
                     var cityName = response.name;
                     var cityTemp = response.main.temp;
                     var cityHumid = response.main.humidity;
@@ -88,118 +100,136 @@
                     var cityLon = response.coord.lon;
                     var cityIcon = response.weather[0].icon;
                     var iconUrl = "http://openweathermap.org/img/w/" + cityIcon + ".png";
-
-                    function uvIndex() {
-                        var uvURL = "http://api.openweathermap.org/data/2.5/uvi?lat=" + cityLat + "&lon=" + cityLon + "&APPID=35bb60361aad6d32da6fd285f2854917";
-                        $.ajax({
-                            url: uvURL,
-                            method: "GET"
-                        }).then(function (res) {
-                            console.log(res);
-
-                            var uv = res.value;
-                            var uvButton = $("<button type='button'>");
-
-                            function buttonColor() {
-                                if (res.value < 6) {
-                                    console.log("green");
-                                    uvButton.addClass("btn btn-success");
-                                }
-                                else if (res.value >= 6) {
-                                    console.log("red");
-                                    uvButton.addClass("btn btn-danger");
-                                }
-                            };
-                            // Create UV Button
-                            uvButton.addClass("btn");
-                            buttonColor();
-                            uvButton.html(uv);
-                            $("#weatherInfo").append("UV Index: ");
-                            $("#weatherInfo").append(uvButton);
-                        });
-                    };
+                    // Add to searched array
+                    searched.push(cityName);
+                    console.log(searched);
+                    save();
 
                     // Side bar cities
-                    var listGroup = $("<a href='#''>");
-                    listGroup.addClass("list-group-item list-group-item-action bg-white side-button");
-                    listGroup.text(cityName);
-                    $("#city-name").append(listGroup);
+                    if ($.inArray(cityName, searchedArray)) {
+                        var listGroup = $("<a href='#''>");
+                        listGroup.addClass("list-group-item list-group-item-action bg-white side-button");
+                        listGroup.text(cityName);
+                        $("#city-name").append(listGroup);
+                    }
+                    else {
+                        console.log("already in array!");
+                    };
 
-                    // Main Section
+                    // Main Icon
                     var iconPic = $("<img id='icon'>");
                     iconPic.attr("src", iconUrl);
-                    console.log(iconPic);
-
                     // City search
                     $("#city-info").text(cityName + " (" + now + ") ");
                     $("#city-info").append(iconPic);
-                    $("#weatherInfo").append("Temperature: " + cityTemp + "<br>");
+                    $("#weatherInfo").append("Temperature: " + cityTemp + " &#176;F" + "<br>");
                     $("#weatherInfo").append("Humidity: " + cityHumid + "%" + "<br>");
                     $("#weatherInfo").append("Wind Speed: " + citySpeed + " MPH" + "<br>");
-                    uvIndex();
-                    forecast();
-
-
-                    function forecast() {
-                        event.preventDefault();
-                        $("#forecast-title").empty();
-                        $("#forecast-data").empty();
-                        var forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&APPID=35bb60361aad6d32da6fd285f2854917"
-
-                        $.ajax({
-                            url: forecastUrl,
-                            method: "GET"
-                        }).then(function (resp) {
-                            console.log(resp);
-                            var forecastArray = ['3', '11', '19', '27', '35'];
-
-                            function makeForecast() {
-                                for (i = 0; forecastArray.length; i++) {
-                                    // 5 Day forecast Icons
-                                    var dayIcons = resp.list[forecastArray[i]].weather[0].icon;
-                                    var tempIcons = resp.list[forecastArray[i]].main.temp;
-                                    var humidityIcons = resp.list[forecastArray[i]].main.humidity;
-                                    var dayIconPic = $("<img id='icon'>");
-                                    var dayIconUrl = "http://openweathermap.org/img/w/" + dayIcons + ".png";
-                                    // var forecastDate = (moment().add((i), 'days').format('l'));
-                                    // console.log(dayIcons);
-                                    // console.log(tempIcons);
-                                    // console.log(humidityIcons);
-                                    // console.log(forecaseDate);
-                                    dayIconPic.attr("src", dayIconUrl);
-
-                                    var makeCol = $("<div class='col'>");
-                                    var makeCard = $("<div class='card'>");
-                                    var makeHead = $("<h3>");
-                                    var makeP = $("<p>");
-
-                                    makeHead.prepend("Date");
-                                    makeCard.addClass("bg-primary text-white");
-                                    makeP.prepend(dayIconPic);
-                                    makeP.append("<br>");
-                                    makeP.append("Temp: " + tempIcons + "F" + "<br>");
-                                    makeP.append("Humidity: " + humidityIcons + "%");
-
-                                    $("#forecast-data").append(makeCol.append(makeCard.append(makeHead)));
-                                    makeCard.append(makeP);
-                                    // console.log(moment().add((i + 1), 'days').format('l'));
-                                    // resp.list[i]
-                                };
-                            };
-
-                            $("#forecast-title").text("5 Day Forecast: ");
-                            makeForecast();
-
-
-
-
-                        });
-                    };
+                    uvIndex(cityLat, cityLon);
                 });
+            }
+
+            function makeForecast(resp) {
+                var forecastArray = ['5', '13', '21', '29', '37'];
+                for (i = 0; forecastArray.length; i++) {
+                    // 5 Day forecast Icons
+                    var x = (i + 1);
+                    var dayIcons = resp.list[forecastArray[i]].weather[0].icon;
+                    var tempIcons = resp.list[forecastArray[i]].main.temp;
+                    var humidityIcons = resp.list[forecastArray[i]].main.humidity;
+                    var dayIconPic = $("<img id='icon'>");
+                    var dayIconUrl = "http://openweathermap.org/img/w/" + dayIcons + ".png";
+                    var forecastDate = (moment().add(x, 'days').format('l'));
+                    var makeCol = $("<div class='col'>");
+                    var makeCard = $("<div class='card'>");
+                    var makeHead = $("<h5>");
+                    var makeP = $("<p class='forecast-spacing'>");
+
+                    dayIconPic.attr("src", dayIconUrl);
+                    makeCard.addClass("bg-primary text-white");
+                    makeHead.addClass("pt-2");
+                    makeHead.prepend(forecastDate + "<br>");
+                    makeHead.addClass("mx-2");
+
+                    makeP.addClass("mx-2");
+                    makeP.prepend(dayIconPic);
+                    makeP.append("<br>");
+                    makeP.append("Temp: " + tempIcons + " &#176;F" + "<br>");
+                    makeP.append("Humidity: " + humidityIcons + "%");
+
+                    $("#forecast-data").append(makeCol.append(makeCard.append(makeHead)));
+                    makeCard.append(makeP);
+                };
+            };
+
+            function forecast(city) {
+                event.preventDefault();
+                $("#forecast-title").empty();
+                $("#forecast-data").empty();
+                console.log("forecast ran")
+                var forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&APPID=35bb60361aad6d32da6fd285f2854917"
+
+                $.ajax({
+                    url: forecastUrl,
+                    method: "GET"
+                }).then(function (resp) {
+                    console.log(resp);
+                    makeForecast(resp);
+                    $("#forecast-title").text("5-Day Forecast: ");
+                });
+            };
+
+            function uvIndex(cityLat, cityLon) {
+                var uvURL = "http://api.openweathermap.org/data/2.5/uvi?lat=" + cityLat + "&lon=" + cityLon + "&APPID=35bb60361aad6d32da6fd285f2854917";
+
+                $.ajax({
+                    url: uvURL,
+                    method: "GET"
+                }).then(function (res) {
+                    console.log(res);
+                    var uv = res.value;
+                    var uvButton = $("<button type='button'>");
+                    // Color of UV button
+                    function buttonColor() {
+                        if (res.value < 6) {
+                            uvButton.addClass("btn btn-success");
+                        }
+                        else if (res.value >= 6) {
+                            uvButton.addClass("btn btn-danger");
+                        }
+                    };
+                    // Create UV Button
+                    uvButton.addClass("btn");
+                    buttonColor();
+                    uvButton.html(uv);
+                    $("#weatherInfo").append("UV Index: ");
+                    $("#weatherInfo").append(uvButton);
+                });
+            };
+
+            // Search button Click
+            $("#find-city").on("click", function (event) {
+                event.preventDefault();
+                $("#city-info").empty();
+                $("#weatherInfo").empty();
+
+                var city = $("#city-search").val();
+                forecast(city);
+                initialCall(city);
+            });
+
+            $("#search-again").on("click", function (event) {
+                event.preventDefault();
+                $("#city-info").empty();
+                $("#weatherInfo").empty();
+
+                console.log("#search-again").val();
+                var city = $("#search-again").val();
+                forecast(city);
+                initialCall(city);
             })
-
-
-        </script>
+        });
+    </script>
 </body>
 
 </html>

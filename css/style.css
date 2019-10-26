@@ -9,7 +9,14 @@
   .jumbotron {
     margin: 0px;
   }
-  
+
+  .container-fluid {
+    line-height: 3em;
+  }
+  .forecast-spacing {
+    line-height: 3em;
+  }
+
   #sidebar-wrapper {
     min-height: 100vh;
     margin-left: -15rem;
