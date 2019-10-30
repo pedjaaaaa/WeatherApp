@@ -98,7 +98,7 @@
             };
 
             function initialCall(city) {
-                var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&APPID=35bb60361aad6d32da6fd285f2854917";
+                var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&APPID=35bb60361aad6d32da6fd285f2854917";
 
                 $.ajax({
                     url: queryURL,
@@ -112,7 +112,7 @@
                     var cityLat = response.coord.lat;
                     var cityLon = response.coord.lon;
                     var cityIcon = response.weather[0].icon;
-                    var iconUrl = "http://openweathermap.org/img/w/" + cityIcon + ".png";
+                    var iconUrl = "https://openweathermap.org/img/w/" + cityIcon + ".png";
                     // Add to searched array
                     searched.push(cityName);
                     console.log(searched);
@@ -144,7 +144,7 @@
                     var humidityIcons = resp.list[forecastArray[i]].main.humidity;
                     var dayIconPic = $("<img id='icon'>");
 
-                    var dayIconUrl = "http://openweathermap.org/img/w/" + dayIcons + ".png";
+                    var dayIconUrl = "https://openweathermap.org/img/w/" + dayIcons + ".png";
                     var forecastDate = (moment().add(x, 'days').format('l'));
                     dayIconPic.attr("src", dayIconUrl);
 
@@ -174,7 +174,7 @@
                 $("#forecast-title").empty();
                 $("#forecast-data").empty();
                 console.log("forecast ran")
-                var forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&APPID=35bb60361aad6d32da6fd285f2854917"
+                var forecastUrl = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&APPID=35bb60361aad6d32da6fd285f2854917"
 
                 $.ajax({
                     url: forecastUrl,
@@ -187,7 +187,7 @@
             };
 
             function uvIndex(cityLat, cityLon) {
-                var uvURL = "http://api.openweathermap.org/data/2.5/uvi?lat=" + cityLat + "&lon=" + cityLon + "&APPID=35bb60361aad6d32da6fd285f2854917";
+                var uvURL = "https://api.openweathermap.org/data/2.5/uvi?lat=" + cityLat + "&lon=" + cityLon + "&APPID=35bb60361aad6d32da6fd285f2854917";
 
                 $.ajax({
                     url: uvURL,
