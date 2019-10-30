@@ -85,16 +85,11 @@
             };
 
             function createSidebar(cityName, searched) {
-                if ($.inArray(cityName, searched)) {
                     var listGroup = $("<a>");
                     listGroup.addClass("list-group-item list-group-item-action bg-white side-button");
                     listGroup.attr("id", "search-again");
                     listGroup.text(cityName);
                     $("#city-name").append(listGroup);
-                }
-                else {
-                    console.log("already in array!");
-                };
             };
 
             function initialCall(city) {
