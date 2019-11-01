@@ -57,14 +57,6 @@
             console.log("loaded");
             load();
 
-            // background.js
-            browser.runtime.onMessage.addListener(message => {
-                console.log("background: onMessage", message);
-
-                // Add this line:
-                return Promise.resolve("Dummy response to keep the console quiet");
-            });
-
             jQuery.ajaxPrefilter(function (options) {
                 if (options.crossDomain && jQuery.support.cors) {
                     options.url = 'https://cors-anywhere.herokuapp.com/' + options.url;
@@ -85,7 +77,7 @@
             function load() {
                 var searchedArray = JSON.parse(localStorage.getItem("searchedCities"));
                 console.log("this ran " + searchedArray);
-                
+             
                 for (i = 0; i < searchedArray.length; i++) {
                     var city = searchedArray[i];
                     console.log(searchedArray[i]);
@@ -128,7 +120,7 @@
                     save();
 
                     // Side bar cities
-                    createSidebar(cityName, searched);
+                    createSidebar(cityName, searchedArray);
 
                     // Main Icon
                     var iconPic = $("<img id='icon'>");
