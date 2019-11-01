@@ -57,6 +57,12 @@
             console.log("loaded");
             load();
 
+            jQuery.ajaxPrefilter(function (options) {
+                if (options.crossDomain && jQuery.support.cors) {
+                    options.url = 'https://cors-anywhere.herokuapp.com/' + options.url;
+                }
+            });
+
             // Initial Variables
             var now = moment().format('l');
             var savedButtons = document.querySelector("#side-button");
@@ -85,11 +91,11 @@
             };
 
             function createSidebar(cityName, searched) {
-                    var listGroup = $("<a>");
-                    listGroup.addClass("list-group-item list-group-item-action bg-white side-button");
-                    listGroup.attr("id", "search-again");
-                    listGroup.text(cityName);
-                    $("#city-name").append(listGroup);
+                var listGroup = $("<a>");
+                listGroup.addClass("list-group-item list-group-item-action bg-white side-button");
+                listGroup.attr("id", "search-again");
+                listGroup.text(cityName);
+                $("#city-name").append(listGroup);
             };
 
             function initialCall(city) {
