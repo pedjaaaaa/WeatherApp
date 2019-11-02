@@ -77,16 +77,18 @@
             function load() {
                 var searchedArray = JSON.parse(localStorage.getItem("searchedCities"));
                 console.log("this ran " + searchedArray);
-             
-                for (i = 0; i < searchedArray.length; i++) {
-                    var city = searchedArray[i];
-                    console.log(searchedArray[i]);
-                    var listSearchedGroup = $("<a>");
-                    listSearchedGroup.attr("id", city);
-                    listSearchedGroup.attr("id", "search-again");
-                    listSearchedGroup.addClass("list-group-item list-group-item-action bg-white side-button");
-                    listSearchedGroup.text(city);
-                    $("#city-name").append(listSearchedGroup);
+                if (searchedArray != null) {
+
+                    for (i = 0; i < searchedArray.length; i++) {
+                        var city = searchedArray[i];
+                        console.log(searchedArray[i]);
+                        var listSearchedGroup = $("<a>");
+                        listSearchedGroup.attr("id", city);
+                        listSearchedGroup.attr("id", "search-again");
+                        listSearchedGroup.addClass("list-group-item list-group-item-action bg-white side-button");
+                        listSearchedGroup.text(city);
+                        $("#city-name").append(listSearchedGroup);
+                    }
                 }
             };
 
